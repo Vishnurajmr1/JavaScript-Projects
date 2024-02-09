@@ -3,6 +3,9 @@ const VoiceRSS = {
     speech(e) {
       this._validate(e), this._request(e);
     },
+    _isPlayAllowed(){
+      return document.visibilityState==='visible' && document.activeElement===document.body;
+    },
     _validate(e) {
       if (!e) throw "The settings are undefined";
       if (!e.key) throw "The API key is undefined";
@@ -38,18 +41,22 @@ const VoiceRSS = {
           let e = t.responseText;
           (audioElement.src = e),
             (audioElement.onloadedmetadata = () => {
-              audioElement.play();
+              if(this._isPlayAllowed){
+                audioElement.play();
+              }
             });
           // new Audio(t.responseText).play();
-        }
-      }),
+        } 
+      })
+      ,
         t.open("POST", "https://api.voicerss.org/", !0),
         t.setRequestHeader(
           "Content-Type",
           "application/x-www-form-urlencoded; charset=UTF-8"
         ),
         t.send(a);
-    },
+    }
+    ,
     _buildRequest(e) {
       const a = e.c && "auto" != e.c.toLowerCase() ? e.c : this._detectCodec();
       return `key=${e.key || ""}&src=${e.src || ""}&hl=${e.hl || ""}&r=${
